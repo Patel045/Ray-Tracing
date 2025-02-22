@@ -93,38 +93,46 @@ void dkernel(int image_height, int image_width, vec3 pixel00_loc, vec3 camera_ce
     
 }
 
-int main(){
+int main(int argc, char* argv[]){
 
+    if(argc != 3){
+        std::cout << "Accepts only 2 arguments" << std::endl;
+        std::cout << "gpu_tracing <image_width> <samples_per_pixel>" << std::endl;
+        return 0;
+    }
+    
+    auto start_main = high_resolution_clock::now();
+    
     std::ofstream img_file("gpu_image.ppm");
-
+    
     // Image
     auto aspect_ratio = 16.0 / 9.0;
-    int image_width = 1000;
-    int samples_per_pixel = 50;
-
+    int image_width = std::atoi(argv[1]);
+    int samples_per_pixel = std::atoi(argv[2]);
+    
     // Calculate the image height, and ensure that it's at least 1.
     int image_height = int(image_width / aspect_ratio);
     image_height = (image_height < 1) ? 1 : image_height;
-
+    
     // Camera
     auto focal_length = 1.0;
     auto viewport_height = 2.0;
     auto viewport_width = viewport_height * (double(image_width)/image_height);
     auto camera_center = point3(0, 0, 0);
-
+    
     // Calculate the vectors across the horizontal and down the vertical viewport edges.
     auto viewport_u = vec3(viewport_width, 0, 0);
     auto viewport_v = vec3(0, -viewport_height, 0);
-
+    
     // Calculate the horizontal and vertical delta vectors from pixel to pixel.
     auto pixel_delta_u = viewport_u / image_width;
     auto pixel_delta_v = viewport_v / image_height;
-
+    
     // Calculate the location of the upper left pixel.
     auto viewport_upper_left = camera_center
-                             - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
+    - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
     auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
-
+    
     
     img_file << "P3\n" << image_width << " " << image_height << "\n255\n";
     
@@ -140,7 +148,7 @@ int main(){
     color* output_color = new color[image_height*image_width];
     color* output_color_device;
     cudaMalloc(&output_color_device, sizeof(color)*image_height*image_width);
-
+    
     dkernel<<<blocks_per_grid,threads_per_block,sizeof(color)*(samples_per_pixel)>>>(
         image_height,
         image_width,
@@ -151,19 +159,26 @@ int main(){
         output_color_device
     );
     cudaDeviceSynchronize();
-
+    
     cudaMemcpy(output_color,output_color_device,sizeof(color)*image_height*image_width,cudaMemcpyDeviceToHost);
     cudaDeviceSynchronize();
-
+    
     ////////////////////////////////////////
-
+    
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
-    std::cout << " Time Taken : " << duration.count() << std::endl;
-
+    std::cout << " Computation Time Taken : " << duration.count() << std::endl;
+    
     for(int i=0; i<image_height*image_width; i++){
         img_file << output_color[i] << '\n';
     }
+
+    delete[] output_color;
+    cudaFree(output_color_device);
+
+    auto stop_main = high_resolution_clock::now();
+    auto duration_main = duration_cast<microseconds>(stop_main - start_main);
+    std::cout << " Total Time Taken : " << duration_main.count() << std::endl;
 
     std::clog << "\rDone.                 \n";
 

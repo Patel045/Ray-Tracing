@@ -55,9 +55,7 @@ class vec3 {
   }
   
   inline __host__ __device__ double dot(const vec3& u, const vec3& v) {
-      return u.arr[0] * v.arr[0]
-           + u.arr[1] * v.arr[1]
-           + u.arr[2] * v.arr[2];
+      return u.arr[0] * v.arr[0] + u.arr[1] * v.arr[1] + u.arr[2] * v.arr[2];
   }
   
   inline __host__ __device__ vec3 unit_vector(const vec3& v) {

@@ -27,9 +27,9 @@ public:
 
     hit_data hit_sphere(const ray& r) {
         vec3 oc = center - r.origin();
-        auto a = r.direction().length_squared();
+        auto a = r.direction().magnitude_squared();
         auto h = dot(r.direction(), oc);
-        auto c = oc.length_squared() - radius*radius;
+        auto c = oc.magnitude_squared() - radius*radius;
         auto discriminant = h*h - a*c;
 
         if (discriminant < 0) {
@@ -42,7 +42,7 @@ public:
 
             color hit_color = color_val;
             point3 poc = r.at(t);
-            double hit_distance = (r.origin() - poc).length();
+            double hit_distance = (r.origin() - poc).magnitude();
             vec3 N = unit_vector(poc - center);
 
             if(hit_color.x() < 0){
@@ -54,8 +54,6 @@ public:
             if(reflect && r.ref_ctr < reflection_limit){
                 ray reflected(poc, r.direction() - 2*dot(r.direction(),normal.direction())*normal.direction(), r.ref_ctr+1); 
                 hit_color = (ray_color(reflected)+ hit_color)/2.0;
-                // data.hit_distance = hit_distance;
-                // return data;
             }
             
             return hit_data(hit_color, hit_distance, normal);

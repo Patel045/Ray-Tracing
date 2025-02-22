@@ -5,17 +5,19 @@
 
 class ray {
   public:
-    ray() {}
+    int ref_ctr;
 
+    ray() {}
     ray(const point3& origin, const vec3& direction) : orig(origin), dir(direction), ref_ctr(0) {}
     ray(const point3& origin, const vec3& direction, int count) : orig(origin), dir(direction), ref_ctr(count) {}
 
+    //Getter Functions
     const point3& origin() const  { return orig; }
     const vec3& direction() const { return dir; }
-    int ref_ctr;
-
+    
+    //Evaluate at parameter t
     point3 at(double t) const {
-        return orig + t*dir;
+      return orig + t*dir;
     }
 
   private:

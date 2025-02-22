@@ -5,17 +5,13 @@
 
 #include <iostream>
 
-using color = vec3;
+#define color vec3
 
-vec3 translate_color(const color& pixel_color){
-    auto r = pixel_color.x();
-    auto g = pixel_color.y();
-    auto b = pixel_color.z();
-
+vec3 translate_color(const color & pixel_color){
     // Translate the [0,1] component values to the byte range [0,255].
-    int rbyte = std::max(0,std::min(255,int(255.999 * r)));
-    int gbyte = std::max(0,std::min(255,int(255.999 * g)));
-    int bbyte = std::max(0,std::min(255,int(255.999 * b)));
+    int rbyte = std::max(0,std::min(255,int(255.999 * pixel_color.x())));
+    int gbyte = std::max(0,std::min(255,int(255.999 * pixel_color.y())));
+    int bbyte = std::max(0,std::min(255,int(255.999 * pixel_color.z())));
 
     return vec3(rbyte,gbyte,bbyte);
 }

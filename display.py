@@ -1,9 +1,14 @@
 from PIL import Image
 import numpy as np
+import sys
 
-inp = input()
+argc = len(sys.argv)
+if(argc != 2):
+    print("Accepts only 1 argument")
+    print("python display.py <cpu/gpu>")
+    exit()
 
-name = inp + "_image"
+name = sys.argv[1] + "_image"
 
 with open(name+".ppm", "rb") as f:
     f.readline()  # P3

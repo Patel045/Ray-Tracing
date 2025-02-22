@@ -49,14 +49,22 @@ vec3 sample_square(){
     return vec3(random_double() - 0.5, random_double() - 0.5, 0);
 }
 
-int main() {
+int main(int argc, char* argv[]){
+
+    if(argc != 3){
+        std::cout << "Accepts only 2 arguments" << std::endl;
+        std::cout << "cpu_tracing <image_width> <samples_per_pixel>" << std::endl;
+        return 0;
+    }
+
+    auto start_main = high_resolution_clock::now();
 
     std::ofstream img_file("cpu_image.ppm");
 
     // Image
     auto aspect_ratio = 16.0 / 9.0;
-    int image_width = 1000;
-    int samples_per_pixel = 50;
+    int image_width = std::atoi(argv[1]);
+    int samples_per_pixel = std::atoi(argv[2]);
 
     // Calculate the image height, and ensure that it's at least 1.
     int image_height = int(image_width / aspect_ratio);
@@ -105,11 +113,17 @@ int main() {
 
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
-    std::cout << " Time Taken : " << duration.count() << std::endl;
+    std::cout << " Computation Time Taken : " << duration.count() << std::endl;
 
     for(int i=0; i<image_height*image_width; i++){
         img_file << output_color[i] << '\n';
     }
+
+    delete[] output_color;
+
+    auto stop_main = high_resolution_clock::now();
+    auto duration_main = duration_cast<microseconds>(stop_main - start_main);
+    std::cout << " Total Time Taken : " << duration_main.count() << std::endl;
 
     std::clog << "\rDone.                 \n";
     return 0;

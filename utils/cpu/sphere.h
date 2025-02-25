@@ -66,12 +66,31 @@ public:
 
 };
 
-void loadSpheresFromFile(const std::string& filename, std::vector<Sphere>& spheres) {
+void loadWorldFromFile(const std::string& filename, std::vector<Sphere>& spheres, point3& lookfrom, point3& lookat, vec3& vup, double& vfov) {
     std::ifstream file(filename);
     if (!file) {
         std::cerr << "Error opening file: " << filename << "\n";
         return;
     }
+
+    std::string cam_details;
+    std::getline(file, cam_details);
+    std::istringstream iss(cam_details);
+
+    std::string cam_name;
+    double lookfrom_x, lookfrom_y, lookfrom_z, lookat_x, lookat_y, lookat_z, vup_x, vup_y, vup_z;
+    if(!(iss >> cam_name)) return;
+    if(cam_name != "Camera"){
+        std::cerr << "Camera Properties Not Found" << "\n";
+        return;
+    }
+    if(!(iss >> lookfrom_x >> lookfrom_y >> lookfrom_z)) return;
+    lookfrom = point3(lookfrom_x,lookfrom_y,lookfrom_z);
+    if(!(iss >> lookat_x >> lookat_y >> lookat_z)) return;
+    lookat = point3(lookat_x,lookat_y,lookat_z);
+    if(!(iss >> vup_x >> vup_y >> vup_z)) return;
+    vup = point3(vup_x,vup_y,vup_z);
+    if(!(iss >> vfov));
 
     std::string line;
     while (std::getline(file, line)) {

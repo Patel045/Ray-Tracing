@@ -58,6 +58,12 @@ class vec3 {
       return u.arr[0] * v.arr[0] + u.arr[1] * v.arr[1] + u.arr[2] * v.arr[2];
   }
   
+  inline __host__ __device__ vec3 cross(const vec3& u, const vec3& v) {
+    return vec3(u.arr[1] * v.arr[2] - u.arr[2] * v.arr[1],
+                u.arr[2] * v.arr[0] - u.arr[0] * v.arr[2],
+                u.arr[0] * v.arr[1] - u.arr[1] * v.arr[0]);
+  }
+
   inline __host__ __device__ vec3 unit_vector(const vec3& v) {
       return v / v.magnitude();
   }

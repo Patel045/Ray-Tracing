@@ -10,21 +10,14 @@
 
 using namespace std::chrono;
 
+std::vector<Sphere> spheres;
+
 color ray_color(const ray& r) {
     //default sky
     vec3 unit_direction = unit_vector(r.direction());
     auto a = 0.5*(unit_direction.y() + 1.0);
     color render_color =  (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
     double cur_distance = inf;
-
-    //Set the Stage !!
-    static std::vector<Sphere> spheres = {
-        Sphere(point3(0,0,-1), 0.5, true),
-        Sphere(point3(1,0,1), 0.45, color(0.9,0.9,0.05)),
-        Sphere(point3(-1,0,-0.5), 0.25, color(1,0.1,0.1)),
-        Sphere(point3(0.8,0.5,-1), 0.3),
-        Sphere(point3(0,-100.5,-1), 100, color(0,1,0))  
-    }; 
 
     //Spheres
     for (auto s: spheres){
@@ -51,13 +44,15 @@ vec3 sample_square(){
 
 int main(int argc, char* argv[]){
 
-    if(argc != 3){
-        std::cout << "Accepts only 2 arguments" << std::endl;
-        std::cout << "cpu_tracing <image_width> <samples_per_pixel>" << std::endl;
+    if(argc != 4){
+        std::cout << "Accepts only 3 arguments" << std::endl;
+        std::cout << "cpu_tracing <image_width> <samples_per_pixel> <textfile.txt>" << std::endl;
         return 0;
     }
 
     auto start_main = high_resolution_clock::now();
+
+    std::string world_txt = argv[3];
 
     std::ofstream img_file("cpu_image.ppm");
 
@@ -81,6 +76,9 @@ int main(int argc, char* argv[]){
 
     auto viewport_upper_left = camera_center - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
     auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
+
+    // Load the World
+    loadSpheresFromFile(world_txt,spheres);
 
     // Output
     color* output_color = new color[image_height*image_width];

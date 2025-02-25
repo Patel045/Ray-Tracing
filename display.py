@@ -5,12 +5,13 @@ import sys
 argc = len(sys.argv)
 if(argc != 2):
     print("Accepts only 1 argument")
-    print("python display.py <cpu/gpu>")
+    print("python display.py <filename.ppm>")
     exit()
 
-name = sys.argv[1] + "_image"
+filename = sys.argv[1]
+name = filename[:-4]
 
-with open(name+".ppm", "rb") as f:
+with open(filename, "rb") as f:
     f.readline()  # P3
     width, height = map(int, f.readline().split())
     f.readline()  # Max color (255)

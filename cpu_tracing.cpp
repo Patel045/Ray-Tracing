@@ -54,7 +54,8 @@ int main(int argc, char* argv[]){
 
     std::string world_txt = argv[3];
 
-    std::ofstream img_file("cpu_image.ppm");
+    std::string world_ppm = world_txt.substr(0,world_txt.size()-4) + "_cpu.ppm";
+    std::ofstream img_file(world_ppm);
 
     // Image
     int image_width = std::atoi(argv[1]);

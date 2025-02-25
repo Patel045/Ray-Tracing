@@ -12,8 +12,8 @@
 #include "utils/gpu/sphere.cuh"
 #include "utils/gpu/hit_data.cuh"
 
-using std::cin;
-using std::cout;
+#define PI 3.14159265359
+
 using namespace std::chrono;
 
 
@@ -85,6 +85,11 @@ void dkernel(int image_height, int image_width, vec3 pixel00_loc, vec3 camera_ce
     
 }
 
+__host__
+double dtr(double degrees) {
+    return degrees * (PI / 180.0);
+}
+
 int main(int argc, char* argv[]){
 
     if(argc != 4){
@@ -106,29 +111,38 @@ int main(int argc, char* argv[]){
     auto aspect_ratio = 16.0 / 9.0;
     int image_height = int(image_width / aspect_ratio);
     
-    // Camera
-    auto camera_center = point3(0, 0, 0);
-    auto viewport_height = 2.0;
-    auto viewport_width = viewport_height * (double(image_width)/image_height);
-    auto focal_length = 1.0;
-    
-    // Viewport
-    auto viewport_u = vec3(viewport_width, 0, 0);
-    auto viewport_v = vec3(0, -viewport_height, 0);
-    auto pixel_delta_u = viewport_u / image_width;
-    auto pixel_delta_v = viewport_v / image_height;
-    
-    auto viewport_upper_left = camera_center - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
-    auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
-    
+    // Camera Parameters Declerartion
+    point3 lookfrom, lookat;
+    vec3 vup;
+    double vfov;
+
     // Load the World
     std::vector<Sphere> spheres_v;
-    loadSpheresFromFile(world_txt,spheres_v);
+    loadWorldFromFile(world_txt,spheres_v,lookfrom,lookat,vup,vfov);
     Sphere* spheres_h = &spheres_v[0];
     Sphere* spheres;
     cudaMalloc(&spheres,sizeof(Sphere)*spheres_v.size());
     cudaMemcpy(spheres,spheres_h,sizeof(Sphere)*spheres_v.size(),cudaMemcpyHostToDevice);
     cudaDeviceSynchronize();
+
+    // Camera Parameters Definition
+    auto h = std::tan(dtr(vfov)/2);
+    auto camera_center = lookfrom;
+    auto focal_length = (lookfrom - lookat).magnitude();
+    auto viewport_height = 2 * h * focal_length;
+    auto viewport_width = viewport_height * (double(image_width)/image_height);
+
+    // Viewport
+    auto w = unit_vector(lookfrom - lookat);
+    auto u = unit_vector(cross(vup, w));
+    auto v = cross(w,u);
+    auto viewport_u = viewport_width * u;
+    auto viewport_v = -viewport_height * v;
+    auto pixel_delta_u = viewport_u / image_width;
+    auto pixel_delta_v = viewport_v / image_height;
+
+    auto viewport_upper_left = camera_center - focal_length*w - viewport_u/2 - viewport_v/2;
+    auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
     // Output
     img_file << "P3\n" << image_width << " " << image_height << "\n255\n";

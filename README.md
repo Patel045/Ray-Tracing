@@ -27,12 +27,23 @@ Each world.txt file consists of:
 
 Note :- 
 Camera_Position: Where the camera is located.
+
 Camera_Direction: The direction the camera is looking.
+
 Upward_Direction: Defines the "up" direction for orientation. Generally set as (0,1,0)
+
 Field_Of_View: The FOV angle in degrees.
+
 Sphere_Name: Any unique identifier (not used in rendering, but useful for organization).
+
 Center(x y z): The sphere’s position in 3D space.
+
 Radius: Sphere size.
+
 Reflect: true for mirror-like surfaces, false for colored surfaces.
-Color(r g b): If the sphere is not reflective, define its RGB color (values between 0-1). For reflective surface color is hardcoded to be metallic-whitish. 
+
+Color(r g b): If the sphere is not reflective, define its RGB color (values between 0-1).
+
+For reflective surface color is hardcoded to be metallic-whitish. 
+
 Color (-1,-1,-1) is a special color code for a sphere with a gradient of colors throught out its surface. 

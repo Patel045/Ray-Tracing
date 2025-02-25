@@ -34,25 +34,17 @@ vec3 sample_square(int idx){
 
 }
 
-__host__ __device__
-color ray_color(const ray& r) {
+__device__
+color ray_color(const ray& r, Sphere* spheres, int num) {
     //default sky
     vec3 unit_direction = unit_vector(r.direction());
     auto a = 0.5*(unit_direction.y() + 1.0);
     color render_color =  (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
     double cur_distance = inf;
 
-    Sphere spheres[] = {
-        Sphere(point3(0,0,-1), 0.5, true),
-        Sphere(point3(1,0,1), 0.45, color(0.9,0.9,0.05)),
-        Sphere(point3(-1,0,-0.5), 0.25, color(1,0.1,0.1)),
-        Sphere(point3(0.8,0.5,-1), 0.3),
-        Sphere(point3(0,-100.5,-1), 100, color(0,1,0))  
-    }; 
-
     //Spheres
-    for (int sp=0; sp<sizeof(spheres)/sizeof(Sphere); sp++){
-        auto hit = spheres[sp].hit_sphere(r); 
+    for (int sp=0; sp<num; sp++){
+        auto hit = spheres[sp].hit_sphere(r,spheres,num); 
         if(hit.hit && hit.hit_distance < cur_distance){
             cur_distance = hit.hit_distance;
             render_color = hit.hit_color;
@@ -63,7 +55,7 @@ color ray_color(const ray& r) {
 }
 
 __global__
-void dkernel(int image_height, int image_width, vec3 pixel00_loc, vec3 camera_center, vec3 pixel_delta_u, vec3 pixel_delta_v, color* color_data){
+void dkernel(int image_height, int image_width, vec3 pixel00_loc, vec3 camera_center, vec3 pixel_delta_u, vec3 pixel_delta_v, color* color_data, Sphere* spheres, int num){
     int i = blockIdx.x % image_width;
     int j = blockIdx.x / image_width;
     int k = threadIdx.x;
@@ -74,7 +66,7 @@ void dkernel(int image_height, int image_width, vec3 pixel00_loc, vec3 camera_ce
     auto ray_direction = pixel_center - camera_center;
     ray r(camera_center, ray_direction);
     
-    color_val[k] = ray_color(r);
+    color_val[k] = ray_color(r,spheres,num);
     __syncthreads();
     
     
@@ -95,14 +87,16 @@ void dkernel(int image_height, int image_width, vec3 pixel00_loc, vec3 camera_ce
 
 int main(int argc, char* argv[]){
 
-    if(argc != 3){
-        std::cout << "Accepts only 2 arguments" << std::endl;
-        std::cout << "gpu_tracing <image_width> <samples_per_pixel>" << std::endl;
+    if(argc != 4){
+        std::cout << "Accepts only 3 arguments" << std::endl;
+        std::cout << "gpu_tracing <image_width> <samples_per_pixel> <textfile.txt>" << std::endl;
         return 0;
     }
     
     auto start_main = high_resolution_clock::now();
     
+    std::string world_txt = argv[3];
+
     std::ofstream img_file("gpu_image.ppm");
     
     // Image
@@ -126,6 +120,15 @@ int main(int argc, char* argv[]){
     auto viewport_upper_left = camera_center - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
     auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
     
+    // Load the World
+    std::vector<Sphere> spheres_v;
+    loadSpheresFromFile(world_txt,spheres_v);
+    Sphere* spheres_h = &spheres_v[0];
+    Sphere* spheres;
+    cudaMalloc(&spheres,sizeof(Sphere)*spheres_v.size());
+    cudaMemcpy(spheres,spheres_h,sizeof(Sphere)*spheres_v.size(),cudaMemcpyHostToDevice);
+    cudaDeviceSynchronize();
+
     // Output
     img_file << "P3\n" << image_width << " " << image_height << "\n255\n";
     
@@ -147,7 +150,9 @@ int main(int argc, char* argv[]){
         camera_center,
         pixel_delta_u,
         pixel_delta_v,
-        output_color_device
+        output_color_device,
+        spheres,
+        int(spheres_v.size())
     );
     cudaDeviceSynchronize();
     

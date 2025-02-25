@@ -1,6 +1,11 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <sstream>
+#include <string>
 #include "vec3.h"
 #include "color.h"
 #include "ray.h"
@@ -12,13 +17,11 @@ color ray_color(const ray& r);
 
 class Sphere{
 public: 
-    Sphere() = delete;
-    Sphere(const point3& center, double radius)
-        :center(center), radius(radius), color_val(-1,-1,-1), reflect(false){}
-    Sphere(const point3& center, double radius, const color& color_val)
-        :center(center), radius(radius), color_val(color_val), reflect(false){}
+    Sphere() = delete;    
     Sphere(const point3& center, double radius, bool reflect)
-        :center(center), radius(radius), color_val(0.8,0.8,0.8), reflect(reflect){}
+        :center(center), radius(radius), reflect(reflect), color_val(0.8,0.8,0.8){}
+    Sphere(const point3& center, double radius, bool reflect, const color& color_val)
+        :center(center), radius(radius), reflect(reflect), color_val(color_val){}
     
     point3 center;
     double radius;
@@ -62,5 +65,37 @@ public:
 
 
 };
+
+void loadSpheresFromFile(const std::string& filename, std::vector<Sphere>& spheres) {
+    std::ifstream file(filename);
+    if (!file) {
+        std::cerr << "Error opening file: " << filename << "\n";
+        return;
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::string name;
+        if(!(iss >> name )) continue;
+        
+        double x, y, z, r;
+        if(!(iss >> x >> y >> z >> r)) continue;
+        
+        std::string reflect;
+        if(!(iss >> reflect)) continue;
+        bool reflect_b = (reflect == "true");
+
+        if(reflect_b){
+            spheres.emplace_back(point3(x,y,z),r,reflect_b);
+        }
+        else{
+            double cr, cg, cb;
+            if(!(iss >> cr >> cg >> cb)) continue;
+            spheres.emplace_back(point3(x,y,z),r,reflect_b,color(cr,cg,cb));
+        }
+
+    }
+}
 
 #endif

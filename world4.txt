@@ -1,0 +1,44 @@
+Camera    0  0  20    0  0  -1    0  1  0    40
+Sphere1    -8   -8  -10    0.5  false  1.0  0.0  0.0
+Sphere2    -4   -8  -10    0.5  false  0.0  1.0  0.0
+Sphere3     0   -8  -10    0.5  false  0.0  0.0  1.0
+Sphere4     4   -8  -10    0.5  false  1.0  1.0  0.0
+Sphere5     8   -8  -10    0.5  false  1.0  0.0  1.0
+Sphere6    -8   -4  -10    0.5  false  0.0  1.0  1.0
+Sphere7    -4   -4  -10    0.5  false  1.0  0.5  0.0
+Sphere8     0   -4  -10    0.5  false  0.5  1.0  0.5
+Sphere9     4   -4  -10    0.5  false  0.2  0.8  0.9
+Sphere10    8   -4  -10    0.5  false  0.9  0.3  0.1
+Sphere11   -8    0  -10    0.5  false  0.5  0.5  1.0
+Sphere12   -4    0  -10    0.5  false  1.0  0.7  0.2
+Sphere13    0    0  -10    0.5  false  0.2  0.7  1.0
+Sphere14    4    0  -10    0.5  false  0.3  1.0  0.7
+Sphere15    8    0  -10    0.5  false  1.0  0.2  0.5
+Sphere16   -8    4  -10    0.5  false  0.7  0.3  1.0
+Sphere17   -4    4  -10    0.5  false  0.1  1.0  0.3
+Sphere18    0    4  -10    0.5  false  0.9  0.7  0.1
+Sphere19    4    4  -10    0.5  false  0.3  0.9  0.7
+Sphere20    8    4  -10    0.5  false  0.7  1.0  0.3
+Sphere21   -8    8  -10    0.5  false  0.6  0.4  0.8
+Sphere22   -4    8  -10    0.5  false  0.8  0.4  0.6
+Sphere23    0    8  -10    0.5  false  0.4  0.8  0.6
+Sphere24    4    8  -10    0.5  false  0.6  0.8  0.4
+Sphere25    8    8  -10    0.5  false  0.8  0.6  0.4
+Sphere26   -6   -6   -8    0.5  false  1.0  0.3  0.3
+Sphere27   -2   -6   -8    0.5  false  0.3  1.0  0.3
+Sphere28    2   -6   -8    0.5  false  0.3  0.3  1.0
+Sphere29    6   -6   -8    0.5  false  1.0  1.0  0.3
+Sphere30   -6   -2   -8    0.5  false  1.0  0.6  0.2
+Sphere31   -2   -2   -8    0.5  false  0.2  1.0  0.6
+Sphere32    2   -2   -8    0.5  false  0.6  0.2  1.0
+Sphere33    6   -2   -8    0.5  false  0.2  0.6  1.0
+Sphere34   -6    2   -8    0.5  false  1.0  0.8  0.2
+Sphere35   -2    2   -8    0.5  false  0.2  1.0  0.8
+Sphere36    2    2   -8    0.5  false  0.8  0.2  1.0
+Sphere37    6    2   -8    0.5  false  0.2  0.8  1.0
+Sphere38   -6    6   -8    0.5  false  1.0  0.4  0.4
+Sphere39   -2    6   -8    0.5  false  0.4  1.0  0.4
+Sphere40    2    6   -8    0.5  false  0.4  0.4  1.0
+Sphere41   -5    0  -12    2.5  true
+Sphere42    5    0  -12    2.5  true
+Sphere43    0    5  -12    2.5  true

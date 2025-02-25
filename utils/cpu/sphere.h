@@ -11,7 +11,7 @@
 #include "ray.h"
 #include "hit_data.h"
 
-#define reflection_limit 1
+#define reflection_limit 3
 
 color ray_color(const ray& r);
 

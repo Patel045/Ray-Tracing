@@ -11,7 +11,7 @@
 #include "ray.cuh"
 #include "hit_data.cuh"
 
-#define reflection_limit 1
+#define reflection_limit 3
 
 class Sphere;
 

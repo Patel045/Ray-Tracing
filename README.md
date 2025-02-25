@@ -2,7 +2,7 @@
 Ray Tracing Assignment for the course Advanced Computer Architecture
 
 ## Instructions to Run
-Make sure to install the python libraries - Numpy, PIL, sys before running the following commands.  
+Make sure to install the python libraries - Numpy, PIL and sys before running the following commands.  
 ```
 pip install numpy
 pip install Pillow
